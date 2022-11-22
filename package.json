@@ -1,0 +1,23 @@
+{
+  "name": "twitter-api",
+  "version": "1.0.0",
+  "description": "Twitter clone API project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeetdholakia/twitter-api-clone.git"
+  },
+  "keywords": [
+    "node",
+    "twitter"
+  ],
+  "author": "Jeet Dholakia",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jeetdholakia/twitter-api-clone/issues"
+  },
+  "homepage": "https://github.com/jeetdholakia/twitter-api-clone#readme"
+}
