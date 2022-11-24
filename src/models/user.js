@@ -74,6 +74,12 @@ const userSchema = new mongoose.Schema({
     },
 });
 
+userSchema.virtual('tweets', {
+    ref: 'Tweet',
+    localField: '_id',
+    foreignField: 'user'
+})
+
 userSchema.methods.toJSON = function () {
     const user = this
     const result = user.toObject()
