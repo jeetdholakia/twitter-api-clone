@@ -1,39 +1,77 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 
-const schema = new mongoose.Schema(
-  { name: "string", required: true, trim: true },
-  { userName: "string", required: true, trim: true, unique: true },
-  { userName: "string", required: true, trim: true, unique: true },
-  {
-    email: "string",
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  username: {
+    type: String,
     required: true,
     trim: true,
     unique: true,
+  },
+  someOtherFancyField: {
+    type: String,
+  },
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+    trim: true,
     lowercase: true,
     validate(value) {
       if (!validator.isEmail(value)) {
-        throw new Error("Invalid email");
+        throw new Error("Email is invalid");
       }
     },
   },
-  {
-    password: "string",
+  password: {
+    type: String,
     required: true,
+    minlength: 7,
     trim: true,
-    minLength: 7,
+    validate(value) {
+      if (value.toLowerCase().includes("password")) {
+        throw new Error('Password cannot contain "password"');
+      }
+    },
   },
-  { avatar: Buffer },
-  { avatarExists: Boolean },
-  { bio: "string" },
-  { website: "string" },
-  { location: "string" },
-  { followers: Array, default: [] },
-  { following: Array, default: [] },
-  {
-    timestamps: true,
-  }
-);
-const User = mongoose.model("User", schema);
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+  avatar: {
+    type: Buffer,
+  },
+  avatarExists: {
+    type: Boolean,
+  },
+  bio: {
+    type: String,
+  },
+  website: {
+    type: String,
+  },
+  location: {
+    type: String,
+  },
+  followers: {
+    type: Array,
+    default: [],
+  },
+  followings: {
+    type: Array,
+    default: [],
+  },
+});
+
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
