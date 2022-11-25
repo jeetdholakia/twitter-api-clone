@@ -23,4 +23,15 @@ router.get("/user", async (req, res) => {
     }
 })
 
+router.post("/auth", async (req, res) => {
+    try {
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+        if (user) {
+            res.status(200).send(user)
+        }
+    } catch(err) {
+        res.status(400).send("User not found")
+    }
+})
+
 module.exports = router
