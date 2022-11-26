@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const schema = new mongoose.Schema({
+const tweetSchema = new mongoose.Schema({
         text: {
             type: String,
             required: true,
@@ -30,6 +30,15 @@ const schema = new mongoose.Schema({
         timestamps: true
     }
 )
-const Tweet = mongoose.model("Tweet", schema);
 
+
+tweetSchema.methods.toJSON = function () {
+    const tweet = this
+    const result = tweet.toObject()
+    delete result.user
+    delete result.tokens
+    return result
+}
+
+const Tweet = mongoose.model("Tweet", tweetSchema);
 module.exports = Tweet;

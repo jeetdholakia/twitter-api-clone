@@ -4,6 +4,25 @@ const auth = require("../middleware/auth");
 
 const router = express.Router()
 
+router.get("/tweet", auth, async (req, res) => {
+    try {
+        const tweets = await Tweet.find()
+        res.status(200).json({
+            statusCode: 200,
+            status: "success",
+            data: tweets,
+            message: "Tweets fetched successfully"
+        })
+    } catch (err) {
+        res.status(500).json({
+            statusCode: 500,
+            status: "error",
+            data: err,
+            message: err.message
+        })
+    }
+})
+
 router.post('/tweet', auth, async (req, res) => {
     const tweet = new Tweet({
         ...req.body,
