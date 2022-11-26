@@ -16,9 +16,6 @@ const userSchema = new mongoose.Schema({
         trim: true,
         unique: true,
     },
-    someOtherFancyField: {
-        type: String,
-    },
     email: {
         type: String,
         unique: true,
@@ -122,6 +119,6 @@ userSchema.statics.findByCredentials = async function (email, password) {
     return user
 }
 
-const User = mongoose.model("User", userSchema);
+const user = mongoose.model("User", userSchema);
 
-module.exports = User;
+module.exports = user;
