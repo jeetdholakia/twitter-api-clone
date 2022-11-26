@@ -132,6 +132,49 @@ router.get('/user/:id/avatar', async (req, res) => {
     }
 })
 
+router.patch('/user', auth, multerUploader.single('avatar'), async (req, res) => {
+    const updates = Object.keys(req.body.changes)
+    console.log(updates)
+    const allowedUpdates = ['name', 'email', 'password', 'age', 'website', 'bio', 'location']
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+    if (!isValidOperation) {
+        return res.status(400).json({
+            statusCode: 400,
+            status: "Error",
+            data: null,
+            message: 'Invalid updates!'
+        })
+    }
+
+    try {
+        const user = await User.findById(req.body.user.id)
+        if (!user) {
+            return res.status(404).json({
+                statusCode: 404,
+                status: "User not found",
+                data: null,
+                message: 'User not found'
+            })
+        }
+
+        updates.forEach((update) => user[update] = req.body.changes[update])
+        await user.save()
+        res.status(201).json({
+            statusCode: 201,
+            status: "Success",
+            data: user,
+            message: "User updated successfully"
+        })
+    } catch (err) {
+        res.status(400).json({
+            statusCode: 400,
+            status: "Error",
+            data: null,
+            message: err.message
+        })
+    }
+})
+
 router.delete("/user/:id", auth, async (req, res) => {
     try {
         const user = await User.findByIdAndRemove(req.params.id)
