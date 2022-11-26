@@ -95,7 +95,7 @@ router.post('/user/:id/avatar', auth, multerUploader.single('avatar'), async (re
 router.get('/user/:id/avatar', async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
-        if(!user || !user.avatar) {
+        if (!user || !user.avatar) {
             res.status(404).json({
                 statusCode: 404,
                 status: "Avatar not found",
@@ -123,7 +123,7 @@ router.get('/user/:id/avatar', async (req, res) => {
         const user = await User.findById(req.params.id)
 
         if (!user || !user.avatar) {
-            throw new Error()
+            res.status(404).send()
         }
         res.set('Content-Type', 'image/jpg')
         res.send(user.avatar)

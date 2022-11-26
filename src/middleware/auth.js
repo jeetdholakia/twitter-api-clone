@@ -11,12 +11,12 @@ const auth = async (req, res, next) => {
             return res.status(400).json({
                 statusCode: 400,
                 status: "Error",
-                data: null,
+                data: user,
                 message: "User not found"
             })
         }
         req.token = token
-        req.user = user
+        req.body.user = user
         next()
     } catch (err) {
         return res.status(400).json({
