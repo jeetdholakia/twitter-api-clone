@@ -16,6 +16,7 @@ const auth = async (req, res, next) => {
             })
         }
         req.token = token
+        req.user = user
         req.body.user = user
         next()
     } catch (err) {
