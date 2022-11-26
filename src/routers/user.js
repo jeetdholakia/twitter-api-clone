@@ -2,31 +2,10 @@ const express = require("express")
 const User = require("../models/user")
 const jwt = require("jsonwebtoken")
 const auth = require("../middleware/auth")
+const sharp = require("sharp")
+const multerUploader = require("../middleware/multer")
 
 const router = new express.Router()
-
-router.post("/auth", async (req, res) => {
-    try {
-        const user = await User.findByCredentials(req.body.email, req.body.password)
-        const token = await user.generateAuthToken()
-        if (user) {
-            res.status(200).json({
-                statusCode: 200,
-                status: "success",
-                token: token,
-                message: "Logged in successfully"
-            })
-        }
-    } catch (err) {
-        console.log(err)
-        res.status(400).json({
-            statusCode: 400,
-            status: "Error",
-            data: null,
-            message: err.message,
-        })
-    }
-})
 
 router.get("/user", auth, async (req, res) => {
     try {
@@ -59,12 +38,13 @@ router.get("/user/:id", auth, async (req, res) => {
             })
 
         }
-    }catch (err) {
+    } catch (err) {
         res.status(400).json({
             statusCode: 400,
             status: "Error",
             data: null,
-            message: "User not found"})
+            message: "User not found"
+        })
     }
 })
 
@@ -89,10 +69,73 @@ router.post("/user", auth, async (req, res) => {
     }
 })
 
+router.post('/user/:id/avatar', auth, multerUploader.single('avatar'), async (req, res) => {
+    const buffer = await sharp(req.file.buffer).resize({width: 250, height: 250}).png().toBuffer()
+    if (req.user.avatar != null) {
+        req.user.avatar = null
+    }
+    req.user.avatar = buffer
+    req.user.avatarExists = true
+    await req.user.save()
+    res.status(201).json({
+        statusCode: 201,
+        status: "Success",
+        data: null,
+        message: "Picture saved successfully",
+    })
+}, (error, req, res, next) => {
+    res.status(400).json({
+        statusCode: 400,
+        status: "Error",
+        data: null,
+        message: error.message
+    })
+})
+
+router.get('/user/:id/avatar', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+        if(!user || !user.avatar) {
+            res.status(404).json({
+                statusCode: 404,
+                status: "Avatar not found",
+                data: null,
+            })
+        }
+        if (user) {
+            // res.set('Content-Type', 'image/jpg')
+            res.status(200).json({
+                statusCode: 200,
+                status: "Success",
+                data: user.avatar,
+                message: "User avatar fetched successfully"
+            })
+        }
+    } catch (err) {
+        res.status(400).json({
+            statusCode: 400,
+            status: "Error",
+            data: null,
+            message: err.message
+        })
+    }
+    try {
+        const user = await User.findById(req.params.id)
+
+        if (!user || !user.avatar) {
+            throw new Error()
+        }
+        res.set('Content-Type', 'image/jpg')
+        res.send(user.avatar)
+    } catch (e) {
+        res.status(404).send()
+    }
+})
+
 router.delete("/user/:id", auth, async (req, res) => {
     try {
         const user = await User.findByIdAndRemove(req.params.id)
-        if(!user) {
+        if (!user) {
             res.status(404).json({
                 statusCode: 404,
                 status: "Error",
