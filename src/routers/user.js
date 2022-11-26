@@ -47,6 +47,27 @@ router.get("/user", auth, async (req, res) => {
     }
 })
 
+router.get("/user/:id", auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+        if (user) {
+            res.status(200).json({
+                statusCode: 200,
+                status: "Success",
+                data: user,
+                message: "User fetched successfully"
+            })
+
+        }
+    }catch (err) {
+        res.status(400).json({
+            statusCode: 400,
+            status: "Error",
+            data: null,
+            message: "User not found"})
+    }
+})
+
 router.post("/user", auth, async (req, res) => {
     const user = new User(req.body)
     // console.log(user)
