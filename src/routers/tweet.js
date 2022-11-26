@@ -25,6 +25,36 @@ router.get("/tweet", auth, async (req, res) => {
     }
 })
 
+router.get('/tweet/:id', async (req, res) => {
+    const _id = req.params.id
+    try {
+        const tweet = await Tweet.find({ userId: _id })
+        if (!tweet) {
+            return res.status(404).json({
+                statusCode: 404,
+                status: "error",
+                data: null,
+                message: "Tweet not found"
+            })
+        }
+        console.log(tweet)
+
+        res.status(200).json({
+            statusCode: 200,
+            status: "success",
+            data: tweet,
+            message: "Tweet fetched successfully"
+        })
+    } catch (err) {
+        return res.status(500).json({
+            statusCode: 500,
+            status: "error",
+            data: null,
+            message: err.message
+        })
+    }
+})
+
 router.post('/tweet', auth, async (req, res) => {
     const tweet = new Tweet({
         ...req.body,
