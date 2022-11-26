@@ -92,6 +92,46 @@ router.post('/user/:id/avatar', auth, multerUploader.single('avatar'), async (re
     })
 })
 
+router.get('/user/:id/avatar', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+        if(!user || !user.avatar) {
+            res.status(404).json({
+                statusCode: 404,
+                status: "Avatar not found",
+                data: null,
+            })
+        }
+        if (user) {
+            // res.set('Content-Type', 'image/jpg')
+            res.status(200).json({
+                statusCode: 200,
+                status: "Success",
+                data: user.avatar,
+                message: "User avatar fetched successfully"
+            })
+        }
+    } catch (err) {
+        res.status(400).json({
+            statusCode: 400,
+            status: "Error",
+            data: null,
+            message: err.message
+        })
+    }
+    try {
+        const user = await User.findById(req.params.id)
+
+        if (!user || !user.avatar) {
+            throw new Error()
+        }
+        res.set('Content-Type', 'image/jpg')
+        res.send(user.avatar)
+    } catch (e) {
+        res.status(404).send()
+    }
+})
+
 router.delete("/user/:id", auth, async (req, res) => {
     try {
         const user = await User.findByIdAndRemove(req.params.id)
