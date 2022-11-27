@@ -110,4 +110,64 @@ router.post('/tweetImage/:id', auth, multerUploader.single('upload'), async (req
     })
 })
 
+router.put('/tweet/:id/like', auth, async (req, res) => {
+    try {
+        const tweet = await Tweet.findById(req.params.id)
+        if (!tweet.likes.includes(req.user.id)) {
+            await tweet.updateOne({ $push: { likes: req.user.id } })
+            res.status(200).json({
+                statusCode: 200,
+                status: "success",
+                data: tweet,
+                message: "Tweet liked successfully"
+            })
+        } else {
+            res.status(403).json({
+                statusCode: 403,
+                status: "Error",
+                data: null,
+                message: "User already liked this tweet"
+            })
+        }
+    } catch (err) {
+        res.status(500).json({
+            statusCode: 500,
+            status: "error",
+            data: null,
+            message: err.message
+        })
+    }
+});
+
+
+router.put('/tweet/:id/unlike', auth, async (req, res) => {
+    try {
+        const tweet = await Tweet.findById(req.params.id);
+        if (tweet.likes.includes(req.user.id)) {
+            await tweet.updateOne({ $pull: { likes: req.user.id } });
+            res.status(200).json({
+                statusCode: 200,
+                status: "success",
+                data: tweet,
+                message: "Tweet unliked successfully"
+            })
+        } else {
+            res.status(403).json({
+                statusCode: 403,
+                status: "Error",
+                data: null,
+                message: "You have already unliked this post"
+            })
+        }
+    } catch (err) {
+        res.status(500).json(err);
+        res.status(500).json({
+            statusCode: 500,
+            status: "error",
+            data: null,
+            message: err.message
+        })
+    }
+});
+
 module.exports = router
