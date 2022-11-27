@@ -78,6 +78,18 @@ userSchema.virtual('tweets', {
     foreignField: 'user'
 })
 
+userSchema.virtual('notificationsSent', {
+    ref: 'Notification',
+    localField: '_id',
+    foreignField: 'notificationSenderId'
+})
+
+userSchema.virtual('notificationsReceived', {
+    ref: 'Notification',
+    localField: '_id',
+    foreignField: 'notificationReceiverId'
+})
+
 userSchema.methods.toJSON = function () {
     const user = this
     const result = user.toObject()
